@@ -1,0 +1,105 @@
+import customtkinter as ctk
+from tkinter import messagebox
+
+ctk.set_appearance_mode("light")   # dark / light
+ctk.set_default_color_theme("blue")
+
+# ------------------ Result Logic ------------------
+def generate_result():
+    try:
+        name = entry_name.get()
+        roll = entry_roll.get()
+
+        marks = [
+            int(entry_maths.get()),
+            int(entry_science.get()),
+            int(entry_english.get()),
+            int(entry_hindi.get()),
+            int(entry_computer.get())
+        ]
+
+        if not name or not roll:
+            raise ValueError("Name and Roll Number required")
+
+        for m in marks:
+            if m < 0 or m > 100:
+                raise ValueError("Marks must be between 0 and 100")
+
+        total = sum(marks)
+        percent = total / 5
+
+        if percent >= 90:
+            grade, status = "A+", "PASS"
+        elif percent >= 75:
+            grade, status = "A", "PASS"
+        elif percent >= 60:
+            grade, status = "B", "PASS"
+        elif percent >= 40:
+            grade, status = "C", "PASS"
+        else:
+            grade, status = "F", "FAIL"
+
+        result_text = f"""
+Student Name : {name}
+Roll Number  : {roll}
+
+Total Marks : {total} / 500
+Percentage  : {percent:.2f}%
+Grade       : {grade}
+Status      : {status}
+        """
+
+        messagebox.showinfo("Student Result", result_text)
+
+    except ValueError as e:
+        messagebox.showerror("Error", str(e))
+
+
+# ------------------ GUI Setup ------------------
+root = ctk.CTk()
+root.title("Student Result Generator")
+root.geometry("420x550")
+
+ctk.CTkLabel(
+    root,
+    text="Student Result Generator",
+    font=("Segoe UI", 22, "bold")
+).pack(pady=15)
+
+# Student Info Frame
+frame_info = ctk.CTkFrame(root)
+frame_info.pack(pady=10, padx=20, fill="x")
+
+ctk.CTkLabel(frame_info, text="Student Name").grid(row=0, column=0, sticky="w", padx=10, pady=5)
+entry_name = ctk.CTkEntry(frame_info, width=220)
+entry_name.grid(row=0, column=1, pady=5)
+
+ctk.CTkLabel(frame_info, text="Roll Number").grid(row=1, column=0, sticky="w", padx=10, pady=5)
+entry_roll = ctk.CTkEntry(frame_info, width=220)
+entry_roll.grid(row=1, column=1, pady=5)
+
+# Marks Frame
+frame_marks = ctk.CTkFrame(root)
+frame_marks.pack(pady=15, padx=20, fill="x")
+
+def subject_row(text, row):
+    ctk.CTkLabel(frame_marks, text=text).grid(row=row, column=0, sticky="w", padx=10, pady=5)
+    entry = ctk.CTkEntry(frame_marks, width=120)
+    entry.grid(row=row, column=1, pady=5)
+    return entry
+
+entry_maths = subject_row("Maths", 0)
+entry_science = subject_row("Science", 1)
+entry_english = subject_row("English", 2)
+entry_hindi = subject_row("Hindi", 3)
+entry_computer = subject_row("Computer", 4)
+
+# Button
+ctk.CTkButton(
+    root,
+    text="Generate Result",
+    font=("Segoe UI", 14, "bold"),
+    command=generate_result
+).pack(pady=20)
+
+root.mainloop()
